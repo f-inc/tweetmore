@@ -6,19 +6,26 @@ const leap = new Leap({
   apiKey: process.env.LEAP_API_KEY as string
 });
 
-const getWorkflow = async (id: string) => {
-  return new Promise((resolve) => {
-    const interval = setInterval(async () => {
-      const { data } = await leap.workflowRuns.getWorkflowRun({
-        workflowRunId: id
-      });
+export const getWorkflow = async (id: string) => {
+  // return new Promise((resolve) => {
+  //   const interval = setInterval(async () => {
+  //     const { data } = await leap.workflowRuns.getWorkflowRun({
+  //       workflowRunId: id
+  //     });
 
-      if (data.status === 'completed') {
-        clearInterval(interval);
-        resolve(data);
-      }
-    }, 1000);
+  //     if (data.status === 'completed') {
+  //       clearInterval(interval);
+  //       // @ts-ignore
+  //       resolve(data.output.value);
+  //     }
+  //   }, 1000);
+  // });
+
+  const { data } = await leap.workflowRuns.getWorkflowRun({
+    workflowRunId: id
   });
+
+  return data;
 };
 
 export const getFeedback = async (tweet: string, handle?: string) => {
@@ -32,9 +39,7 @@ export const getFeedback = async (tweet: string, handle?: string) => {
       }
     });
 
-    const workflow = await getWorkflow(id);
-    // @ts-ignore
-    return workflow.output.value;
+    return id;
   } else {
     const {
       data: { id }
@@ -46,8 +51,6 @@ export const getFeedback = async (tweet: string, handle?: string) => {
       }
     });
 
-    const workflow = await getWorkflow(id);
-    // @ts-ignore
-    return workflow.output.value;
+    return id;
   }
 };

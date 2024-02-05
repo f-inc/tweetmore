@@ -1,33 +1,66 @@
 import LoadingDots from '../ui/LoadingDots';
-import { getFeedback } from './analyze';
-import { useState } from 'react';
+import { getFeedback, getWorkflow } from './analyze';
+import { useEffect, useState } from 'react';
 
 const Form = () => {
   const [tweet, setTweet] = useState<string>('');
   const [handle, setHandle] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [result, setResult] = useState<string>();
+  const [workflowId, setWorkflowId] = useState<string>();
+
+  useEffect(() => {
+    // @ts-ignore
+    let intervalId;
+
+    if (workflowId) {
+      intervalId = setInterval(async () => {
+        try {
+          const res = await getWorkflow(workflowId);
+          if (res.status === 'completed') {
+            // @ts-ignore
+            clearInterval(intervalId);
+
+            // @ts-ignore
+            setResult(res.output.value);
+            setWorkflowId(undefined);
+            setLoading(false);
+          }
+        } catch (error) {
+          console.error('Error fetching workflow:', error);
+          setLoading(false);
+        }
+      }, 3000);
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [workflowId]);
 
   const analyze = () => {
     (async () => {
       setLoading(true);
+      setResult(undefined);
 
       try {
-        let feedback = await getFeedback(
+        let _workflowId = await getFeedback(
           tweet,
           handle === '' ? undefined : handle
         );
 
-        setResult(feedback);
-        setLoading(false);
+        // @ts-ignore
+        setWorkflowId(_workflowId);
       } catch {
-        console.error('Error getting feedback');
+        console.error('Error generating worjflow_id');
         setLoading(false);
       }
     })();
   };
 
-  console.log(result);
+  console.log(workflowId, result);
 
   return (
     <>
