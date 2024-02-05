@@ -34,6 +34,7 @@ const Form = () => {
     }
 
     return () => {
+      // @ts-ignore
       if (intervalId) {
         clearInterval(intervalId);
       }
