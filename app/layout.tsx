@@ -9,13 +9,12 @@ import dynamic from 'next/dynamic';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 
 const meta = {
-  title: 'Know More Bot',
-  description:
-    'Our AI bot scrapes every B2B lead you pull from your website so that you know exactly who your potential customers are. Stop leaving money on the table.',
+  title: 'Tweet More',
+  description: {`An AI coach for your Twitter account. It's time to build that personal brand.`},
   cardImage: '/og.png',
   robots: 'follow, index',
   favicon: '/favicon.ico',
-  url: 'https://knowmore.bot',
+  url: 'https://tweetmore.ai',
   type: 'website'
 };
 
