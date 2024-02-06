@@ -14,7 +14,7 @@ const meta = {
   cardImage: '/og.png',
   robots: 'follow, index',
   favicon: '/favicon.ico',
-  url: 'https://tweetmore.ai',
+  url: 'https://tweetmore.bot',
   type: 'website'
 };
 
