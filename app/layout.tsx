@@ -10,7 +10,7 @@ import { Plus_Jakarta_Sans } from 'next/font/google';
 
 const meta = {
   title: 'Tweet More',
-  description: {`An AI coach for your Twitter account. It's time to build that personal brand.`},
+  description: 'An AI coach for your Twitter account. It is time to build that personal brand.'',
   cardImage: '/og.png',
   robots: 'follow, index',
   favicon: '/favicon.ico',
