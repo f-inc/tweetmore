@@ -24,6 +24,8 @@ export default function Home({ user }: Props) {
   const [error, setError] = useState(false);
   const [blurData, setBlurData] = useState(false);
 
+  const supabase = useSupabase();
+
   async function toggleLoading() {
     setLoading(!loading);
   }
@@ -34,10 +36,10 @@ export default function Home({ user }: Props) {
 
   return (
     <>
-      <div className="max-w-7xl mx-auto min-h-screen px-6">
-        <div className="text-white py-10 md:py-20 bg-opacity-10">
-          <div className="container flex flex-col lg:flex-row justify-between items-center">
-            <div className="flex flex-col w-full items-center gap-y-8">
+      <div className="min-h-screen px-6 mx-auto max-w-7xl">
+        <div className="py-10 text-white md:py-20 bg-opacity-10">
+          <div className="container flex flex-col items-center justify-between lg:flex-row">
+            <div className="flex flex-col items-center w-full gap-y-8">
               <h1
                 className="text-5xl lg:text-[64px] font-bold gap-4 max-w-[45rem] text-center"
                 style={{
@@ -54,7 +56,7 @@ export default function Home({ user }: Props) {
               >
                 A personal brand coach for your Twitter.
               </h1>
-              <p className="text-sm md:text-lg text-gray-300 max-w-lg text-center">
+              <p className="max-w-lg text-sm text-center text-gray-300 md:text-lg">
                 Our AI bot scrapes your Twitter and helps you come up with
                 tweets that don’t suck.
               </p>
@@ -67,7 +69,7 @@ export default function Home({ user }: Props) {
       </div>
       <div className="flex justify-center">
         <h1
-          className="text-3xl lg:text-5xl font-bold gap-4 text-center px-4"
+          className="gap-4 px-4 text-3xl font-bold text-center lg:text-5xl"
           style={{
             fontStyle: 'normal',
             fontWeight: 700,
@@ -85,9 +87,9 @@ export default function Home({ user }: Props) {
       </div>
 
       <div className="flex justify-center mt-12 mb-28">
-        <div className=" grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
           <div
-            className="px-6 py-5 rounded-2xl flex gap-5 items-center"
+            className="flex items-center gap-5 px-6 py-5 rounded-2xl"
             style={{
               border: '1px solid rgba(255, 255, 255, 0.15)',
               background: 'rgba(0, 0, 0, 0.15)'
@@ -102,7 +104,7 @@ export default function Home({ user }: Props) {
             </div>
           </div>
           <div
-            className="px-6 py-5 rounded-2xl flex gap-5 items-center"
+            className="flex items-center gap-5 px-6 py-5 rounded-2xl"
             style={{
               border: '1px solid rgba(255, 255, 255, 0.15)',
               background: 'rgba(0, 0, 0, 0.15)'
@@ -117,7 +119,7 @@ export default function Home({ user }: Props) {
             </div>
           </div>
           <div
-            className="px-6 py-5 rounded-2xl flex gap-5 items-center"
+            className="flex items-center gap-5 px-6 py-5 rounded-2xl"
             style={{
               border: '1px solid rgba(255, 255, 255, 0.15)',
               background: 'rgba(0, 0, 0, 0.15)'

@@ -1,6 +1,6 @@
 import LoadingDots from '../ui/LoadingDots';
 import { getFeedback, getWorkflow } from './analyze';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSupabase } from '@/app/supabase-provider';
 import AuthUI from '@/app/signin/AuthUI';
 import {
@@ -11,7 +11,15 @@ import {
 const Form = ({ user }: { user: User | null | undefined }) => {
   const [tweet, setTweet] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [result, setResult] = useState<string>();
+  const [ratings, setRatings] = useState<{
+    conciseness: number;
+    word_choice: number;
+    seriousness: number;
+    clarity: number;
+    readability: number;
+    presentability: number;
+  }>();
+  const [revisedTweet, setRevisedTweet] = useState<string>();
   const [workflowId, setWorkflowId] = useState<string>();
 
   const [showModal, setShowModal] = useState(false);
@@ -22,11 +30,9 @@ const Form = ({ user }: { user: User | null | undefined }) => {
   });
 
   const login = async () => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    await supabase.auth.signInWithOAuth({
       provider: 'twitter'
     });
-
-    console.log(data, error);
   };
 
   useEffect(() => {
@@ -41,8 +47,18 @@ const Form = ({ user }: { user: User | null | undefined }) => {
             // @ts-ignore
             clearInterval(intervalId);
 
+            console.log(res.output);
+
+            const revisedTweet = res.output.revised_tweet;
+            setRevisedTweet(revisedTweet);
+
+            const _ratings = res.output.value;
+            const ratings = _ratings.replace(/'/g, '"').match(/\{([^}]+)\}/g);
+            console.log(ratings);
+            setRatings(JSON.parse(ratings));
+
             // @ts-ignore
-            setResult(res.output.value);
+            // setRatings(ratings);
             setWorkflowId(undefined);
             setLoading(false);
           }
@@ -61,18 +77,20 @@ const Form = ({ user }: { user: User | null | undefined }) => {
     };
   }, [workflowId]);
 
-  const analyze = () => {
+  const analyze = (tweet: string) => {
     if (!user) {
+      localStorage.setItem('tweet', tweet);
       setShowModal(true);
       return;
     }
 
     (async () => {
       setLoading(true);
-      setResult(undefined);
+      setRatings(undefined);
 
       try {
         const handle = user?.user_metadata.preferred_username;
+
         let _workflowId = await getFeedback(tweet, handle);
 
         // @ts-ignore
@@ -84,16 +102,29 @@ const Form = ({ user }: { user: User | null | undefined }) => {
     })();
   };
 
+  useEffect(() => {
+    const tweet = localStorage.getItem('tweet');
+    if (user && tweet && tweet !== '') {
+      setTweet(tweet);
+      localStorage.removeItem('tweet');
+      analyze(tweet);
+    }
+  }, [user]);
+
   return (
     <>
       {showModal && (
         <div className="absolute inset-0 z-50 flex items-center justify-center w-full h-screen backdrop-blur-sm">
-          <div className="w-full mx-10 p-4 lg:max-w-sm bg-black rounded-lg border border-[#222]">
+          <div className="flex flex-col items-center w-full p-4 mx-10 bg-white rounded-lg lg:max-w-sm">
+            <div className="text-lg font-bold text-center text-black">
+              {/* We'll scrape your tweets to help you write better ones. */}
+            </div>
+
             <button
-              className="w-full h-12 bg-blue-500 rounded-lg"
+              className="w-full h-12 mt-0 bg-[#1a9ef5] rounded-lg"
               onClick={() => login()}
             >
-              Log in with 𝕏
+              Log in with 𝕏 / Twitter
             </button>
           </div>
         </div>
@@ -105,42 +136,74 @@ const Form = ({ user }: { user: User | null | undefined }) => {
           value={tweet}
           onChange={(e) => setTweet(e.target.value)}
         />
-        {/* <input
-          type="text"
-          className="w-full lg:w-1/2 text-white outline-none bg-[#00000026] rounded-xl px-5 border border-solid border-[#FFFFFF1F] border-opacity-25 placeholder-white placeholder-opacity-25 h-12"
-          placeholder="twitter @ (for accurate feedback, optional)"
-          value={handle}
-          onChange={(e) => setHandle(e.target.value)}
-        /> */}
+
         <button
           className="text-[#8D5BDF] bg-[#5A25B080] rounded-xl font-medium text-base px-6 h-12 w-full lg:w-1/2 disabled:cursor-not-allowed flex items-center justify-center"
           disabled={tweet === '' || loading}
-          onClick={analyze}
+          onClick={() => analyze(tweet)}
         >
-          {/* We need your Twitter @ to give you accurate feedback, based on
-              your past tweets. */}
           {loading ? <LoadingDots /> : ' Analyze'}
         </button>
       </div>
 
-      <div className="mt-10 text-base font-medium tracking-wide lg:mt-16">
-        {result && (
-          <div>
-            <div className="flex justify-center text-xl font-medium text-white">
-              {' '}
-              Output:
+      <div className="flex justify-center w-full mt-10 text-base font-medium tracking-wide lg:mt-16">
+        {ratings && (
+          <div className="w-full lg:w-1/2">
+            <div className="w-full text-lg h-12 bg-[#00000026] border border-[#FFFFFF1F] rounded-lg flex justify-between items-center px-5 font-bold">
+              Your Tweet
             </div>
-            <br />
-            <br />
-            {/* line break when theres a new line*/}
-            {result.split('\n').map((i, key) => {
-              return (
-                <div key={key}>
-                  {i}
-                  <br />
-                </div>
-              );
-            })}
+
+            <div className="grid grid-cols-3 grid-rows-2 gap-4 mt-5">
+              {Object.entries(ratings)
+                .slice(0, 6)
+                .map(([key, value]) => (
+                  <div
+                    key={key}
+                    className="col-span-1 bg-[#00000026] border border-[#FFFFFF1F] rounded-lg flex flex-col items-center px-5 h-32 "
+                  >
+                    <span className="mt-4 text-5xl font-bold">{value}</span>
+                    <span className="mt-1.5">
+                      {key
+                        .split('_')
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(' ')}
+                    </span>
+                    <div className="mt-2 relative w-full h-2.5 overflow-hidden bg-white bg-opacity-10 border border-[#FFFFFF1F] rounded-full">
+                      <div
+                        className="h-2.5 rounded-r-full"
+                        style={{
+                          width: `${value * 10}%`,
+                          backgroundColor: `${
+                            value >= 9
+                              ? '#12F078'
+                              : value >= 8
+                              ? '#9FFB66'
+                              : value >= 7
+                              ? '#D4FB66'
+                              : '#FFF969'
+                          }`
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+            </div>
+
+            <div className="mt-5 bg-[#00000026] border border-[#FFFFFF1F] w-full rounded-lg">
+              <div className="h-12 border-b border-[#FFFFFF1F] flex items-center pl-5 text-lg font-bold">
+                Revised Tweet
+              </div>
+              <div className="px-5 py-3">
+                {revisedTweet?.split('\n').map((line, index) => (
+                  <React.Fragment key={index}>
+                    {line}
+                    <br />
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>
