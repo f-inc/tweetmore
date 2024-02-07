@@ -87,9 +87,12 @@ const Form = ({ user }: { user: User | null | undefined }) => {
   return (
     <>
       {showModal && (
-        <div className="absolute z-50 w-full h-screen inset-0 flex items-center justify-center backdrop-blur-sm">
+        <div className="absolute inset-0 z-50 flex items-center justify-center w-full h-screen backdrop-blur-sm">
           <div className="w-full mx-10 p-4 lg:max-w-sm bg-black rounded-lg border border-[#222]">
-            <button className="h-12 w-full bg-blue-500 rounded-lg">
+            <button
+              className="w-full h-12 bg-blue-500 rounded-lg"
+              onClick={() => login()}
+            >
               Log in with 𝕏
             </button>
           </div>
@@ -120,10 +123,10 @@ const Form = ({ user }: { user: User | null | undefined }) => {
         </button>
       </div>
 
-      <div className="mt-10 lg:mt-16 font-medium text-base tracking-wide">
+      <div className="mt-10 text-base font-medium tracking-wide lg:mt-16">
         {result && (
           <div>
-            <div className="text-white text-xl font-medium flex justify-center">
+            <div className="flex justify-center text-xl font-medium text-white">
               {' '}
               Output:
             </div>
