@@ -49,9 +49,11 @@ const Form = ({ user }: { user: User | null | undefined }) => {
 
             console.log(res.output);
 
+            // @ts-ignore
             const revisedTweet = res.output.revised_tweet;
             setRevisedTweet(revisedTweet);
 
+            // @ts-ignore
             const _ratings = res.output.value;
             const ratings = _ratings.replace(/'/g, '"').match(/\{([^}]+)\}/g);
             console.log(ratings);
