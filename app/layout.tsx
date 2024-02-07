@@ -10,7 +10,8 @@ import { Plus_Jakarta_Sans } from 'next/font/google';
 
 const meta = {
   title: 'Tweet More',
-  description: 'An AI coach for your Twitter account. It is time to build that personal brand.',
+  description:
+    'An AI coach for your Twitter account. It is time to build that personal brand.',
   cardImage: '/og.png',
   robots: 'follow, index',
   favicon: '/favicon.ico',
@@ -59,7 +60,7 @@ export default function RootLayout({
 }: PropsWithChildren) {
   return (
     <html lang="en">
-      <PHProvider>
+      {/* <PHProvider> */}
         <body className="bg-[#010b13] loading">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -103,18 +104,18 @@ export default function RootLayout({
             </defs>
           </svg>
           {/* <SupabaseProvider> */}
-          <Navbar />
-          <main
-            id="skip"
-            className={`min-h-[calc(100dvh-4rem)] md:min-h[calc(100dvh-5rem)] ${jakarta.className}`}
-          >
-            <PostHogPageView />
-            {children}
-          </main>
-          {/* <Footer /> */}
+            <Navbar />
+            <main
+              id="skip"
+              className={`min-h-[calc(100dvh-4rem)] md:min-h[calc(100dvh-5rem)] ${jakarta.className}`}
+            >
+              <PostHogPageView />
+              {children}
+            </main>
+            {/* <Footer /> */}
           {/* </SupabaseProvider> */}
         </body>
-      </PHProvider>
+      {/* </PHProvider> */}
     </html>
   );
 }
